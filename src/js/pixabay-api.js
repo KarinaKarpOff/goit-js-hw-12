@@ -8,7 +8,7 @@ export async function getImagesByQuery(query, page) {
       key: API_KEY,
       q: query,
       image_type: 'photo',
-      orientation: 'horisontal',
+      orientation: 'horizontal',
       safesearch: true,
       page,
       per_page: 15,

@@ -20,7 +20,6 @@ let currentPage = 1;
 let totalHits = 0;
 
 form.addEventListener('submit', onSearch);
-
 loadMoreBtn.addEventListener('click', onLoadMore);
 
 async function onSearch(event) {
@@ -33,16 +32,12 @@ async function onSearch(event) {
       message: 'Please enter a search query!',
       position: 'topRight',
     });
-
     return;
   }
 
   currentPage = 1;
-
   clearGallery();
-
   hideLoadMoreButton();
-
   showLoader();
 
   try {
@@ -54,19 +49,26 @@ async function onSearch(event) {
       iziToast.error({
         message:
           'Sorry, there are no images matching your search query. Please try again!',
+        position: 'topRight',
       });
-
       return;
     }
 
     createGallery(data.hits);
 
-    if (totalHits > 15) {
+    // Якщо вже завантажили всі результати на першій сторінці
+    if (totalHits <= 15) {
+      iziToast.info({
+        message: "We're sorry, but you've reached the end of search results.",
+        position: 'topRight',
+      });
+    } else {
       showLoadMoreButton();
     }
-  } catch {
+  } catch (error) {
     iziToast.error({
       message: 'Something went wrong!',
+      position: 'topRight',
     });
   } finally {
     hideLoader();
@@ -78,6 +80,7 @@ async function onSearch(event) {
 async function onLoadMore() {
   currentPage++;
 
+  hideLoadMoreButton();
   showLoader();
 
   try {
@@ -92,21 +95,26 @@ async function onLoadMore() {
 
       iziToast.info({
         message: "We're sorry, but you've reached the end of search results.",
+        position: 'topRight',
       });
+    } else {
+      showLoadMoreButton();
     }
 
     const card = document.querySelector('.gallery-item');
 
-    const cardHeight = card.getBoundingClientRect().height;
+    if (card) {
+      const cardHeight = card.getBoundingClientRect().height;
 
-    window.scrollBy({
-      top: cardHeight * 2,
-
-      behavior: 'smooth',
-    });
-  } catch {
+      window.scrollBy({
+        top: cardHeight * 2,
+        behavior: 'smooth',
+      });
+    }
+  } catch (error) {
     iziToast.error({
       message: 'Something went wrong!',
+      position: 'topRight',
     });
   } finally {
     hideLoader();
